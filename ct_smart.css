@@ -1,6 +1,16 @@
 @charset "utf-8";
 /* CSS Document */
 
+*, *:after, *:before {
+	box-sizing: border-box;
+}
+
+body {
+	height: 100%;
+	margin: 0;
+	font-family: "segoe UI", Tahoma, Geneva, Verdana, Sans-serif;
+	line-height: 1.5;
+}
 ul#set-1{
 	list-style: none;
 	padding: 5px;
