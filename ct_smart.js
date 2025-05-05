@@ -2,11 +2,11 @@ $(function(){
 	let all_data = [];
 	let sel_state = [-1, [3, [0, 0]]];
 	$("div#set-2, div#set-3").css("display", "none");
-	$("div#set-1 input#cash-subj").val("").focus();
+	$("div#set-1 input#cash-table-name").val("").focus();
 	
 	
 	$("div#set-1 a").click(function(){
-		let get_c_subj = $("div#set-1 input#cash-subj"), sel_c_subj = $("div#set-1 select");
+		let get_c_subj = $("div#set-1 input#cash-table-name"), sel_c_subj = $("div#set-1 select");
 		if(get_c_subj.val() != ""){
 			all_data[all_data.length] = [get_c_subj.val(), []];
 		}
@@ -30,7 +30,7 @@ $(function(){
 		
 		return false;
 	});
-	$("div#set-1 input#cash-subj").keyup(function(e){
+	$("div#set-1 input#cash-table-name").keyup(function(e){
 		if(e.key == "Enter"){
 			let sel_c_subj = $("div#set-1 select");
 			if($(this).val() != ""){
@@ -64,7 +64,7 @@ $(function(){
 	});
 	
 	$("div#set-2 a").click(function(){
-		let get_c_name = $("div#set-2 input#cash-subj-name");
+		let get_c_name = $("div#set-2 input#cash-row-name");
 		if(all_data[sel_state[0]][1].length > 0){
 			$("div#set-3").css("display", "block");
 		}
@@ -76,7 +76,7 @@ $(function(){
 		get_c_name.val("").focus();
 		sel_state = process_table(all_data[sel_state[0]], sel_state);
 	});
-	$("div#set-2 input#cash-subj-name").keyup(function(e){
+	$("div#set-2 input#cash-row-name").keyup(function(e){
 		if(e.key == "Enter"){
 			if($(this).val() != ""){
 				all_data[sel_state[0]][1][all_data[sel_state[0]][1].length] = [0, 0, $(this).val(), 0];
@@ -94,9 +94,23 @@ $(function(){
 		sel_state[1][0] += 1;
 		sel_state[1][1] = [0, 0];
 		$("div#set-4 input#cell-data").val("");
-		
 		all_data[sel_state[0]] = column_processor(all_data[sel_state[0]], sel_state[1][0]);
+		console.log(all_data[sel_state[0]]);
+		
 		sel_state = process_table(all_data[sel_state[0]], sel_state);
+	});
+	$("div#set-3 input#cash-column-name").keyup(function(e){
+		if(e.key == "Enter"){
+			sel_state[1][0] += 1;
+			sel_state[1][1] = [0, 0];
+			$("div#set-4 input#cell-data").val("");
+			// let getInput = $(this).closest('div').find('input');
+			all_data[sel_state[0]] = column_processor(all_data[sel_state[0]], sel_state[1][0]);
+			console.log(all_data[sel_state[0]]);
+			
+			// getInput.val("").focus();
+			sel_state = process_table(all_data[sel_state[0]], sel_state);
+		}
 	});
 	
 	$("div#set-4 a").click(function(){
@@ -243,7 +257,14 @@ function process_table(all_data, sel_state){
 					stat_struct += "<strong>Total</strong>";
 				}
 			}else{ // Subsequent columns
-				stat_struct += "<strong>Cap. "+(i-2)+"</strong>";
+				// stat_struct += "<strong>Cap. ";
+				stat_struct += "<strong>";
+				if((i-2) == 1){
+					stat_struct += "Total";
+				}else{
+					stat_struct += "Cap. "+(i-3);
+				}
+				stat_struct += "</strong>";
 			}
 			stat_struct += "</div>";
 		}

@@ -8,9 +8,35 @@
 body {
 	height: 100%;
 	margin: 0;
+	padding: 15px;
 	font-family: "segoe UI", Tahoma, Geneva, Verdana, Sans-serif;
 	line-height: 1.5;
 }
+
+header{
+	margin: 0 0 15px 0;
+}
+
+header *{
+	display: inline-block;
+}
+header, footer{
+	background-color: dimgray;
+	color: #fff;
+	padding: 15px;
+}
+footer{
+	font-size: 1.2em;
+	border: 2px solid #000;
+}
+footer span{
+	color: yellow;
+}
+
+main{
+	height: 75vh;
+}
+
 ul#set-1{
 	list-style: none;
 	padding: 5px;
@@ -54,4 +80,17 @@ ul#set-1 li div.grps-data span{
 }
 ul#set-1 li div.grps-data{
 	cursor: pointer;
+}
+
+.controllers{
+	padding: 10px;
+	border: 1px solid #ccc;
+}
+
+.txt-inputs{
+	font-size: 1.2em;;
+	/* height: 10px; */
+	padding: 5px 0 5px 10px;
+	border: none;
+	outline: none;
 }

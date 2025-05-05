@@ -5,24 +5,32 @@
         <link rel="stylesheet" type="text/css" href="ct_smart.css" />
 	</head>
 	<body>
-		<div id="set-1">
-			<input type="text" id="cash-subj" placeholder="Cash Subject" />
-			<a href="#">Go</a>
-			<select></select>
-		</div>
-		<div id="set-2">
-			<input type="text" id="cash-subj-name" placeholder="Cash Subject Name" />
-			<a href="#">Go</a>
-		</div>
-		<div id="set-3">
-			Append a column.
-			<a href="#">Go</a>
-		</div>
-		<div id="set-4">
-			<input type="text" id="cell-data" placeholder="0.00" />
-			<a href="#">Go</a>
-		</div>
-		<ul id="set-1"></ul>
+		<header><h1>Cash Table</h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3>Just Assess...</h3></header>
+		<main>
+			<div class="controllers" id="set-1">
+				<input type="text" class="txt-inputs" id="cash-table-name" placeholder="Table Name.." />
+				<a href="#">Create</a>
+				<select></select>
+				<span>Create a Table.</span>
+			</div>
+			<div class="controllers" id="set-2">
+				<input type="text" class="txt-inputs" id="cash-row-name" placeholder="Row Name" />
+				<a href="#">Create</a>
+				<span>Create Row.</span>
+			</div>
+			<div class="controllers" id="set-3">
+				<input type="text" class="txt-inputs" id="cash-column-name" placeholder="Column Name" />
+				<a href="#">Go</a>
+				<span>Append a column.</span>
+			</div>
+			<div class="controllers" id="set-4">
+				<input type="text" class="txt-inputs" id="cell-data" placeholder="0.00" />
+				<a href="#">Go</a>
+				<span>Append caption columns & select a <strong>Cell</strong> under a caption column to a particular row & apply a floating-point <em>(0.00)</em> number.</span>
+			</div>
+			<ul id="set-1"></ul>
+		</main>
+		<footer>Developed by: David <span>Kwadwo Sarfroh Danquah</span>. Contact me on: Email: <span>kwadjodanq@gmail.com</span> +233 558 244996</footer>
 	
 	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
 	<script type="text/javascript" src="ct_smart.js"></script>
