@@ -47,24 +47,26 @@ ul#set-1 li{
 	padding: 5px;
 }
 ul#set-1 li div{
-	//float: left;
 	display: inline-block;
 	margin-right: 10px;
 	padding: 5px;
 	border: 1px solid yellow;
 }
+ul#set-1 li.grps-head div.column-cap{
+	transition: all 0.5s ease;
+}
+ul#set-1 li.grps-head div.column-cap:hover,
+ul#set-1 li.grps-head div.column-cap.selected,
 ul#set-1 li.grps-body div.grps-data:hover,
 ul#set-1 li.grps-body div.grps-data.selected{
 	background-color: #80c1ff;
 	border: 1px solid red;
-	//padding: 5px;
 }
 ul#set-1 li div.grps-num{
 	width: 50px;
 }
 ul#set-1 li div.grps-names{
 	width: 150px;
-	//padding: 5px 0 5px 0;
 }
 ul#set-1 li.grps-total  div.grps-data,
 ul#set-1 li div.grps-total{
@@ -93,4 +95,8 @@ ul#set-1 li div.grps-data{
 	padding: 5px 0 5px 10px;
 	border: none;
 	outline: none;
+}
+
+.sel-column{
+	background-color: #cbe4fc;
 }
