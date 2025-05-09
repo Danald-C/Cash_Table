@@ -38,19 +38,24 @@ main{
 }
 
 ul#set-1{
+	/* width: 100%; */
 	list-style: none;
+	white-space: nowrap;
 	padding: 5px;
+	overflow: auto;
 }
-ul#set-1 li{
+ul#set-1 li.row{
 	background-color: yellow;
 	margin: 5px 0 5px 0;
 	padding: 5px;
 }
-ul#set-1 li div{
+ul#set-1 li.row div{
 	display: inline-block;
 	margin-right: 10px;
 	padding: 5px;
 	border: 1px solid yellow;
+}
+ul#set-1 li.row div strong, ul#set-1 li.row div span{
 }
 ul#set-1 li.grps-head div.column-cap{
 	transition: all 0.5s ease;
