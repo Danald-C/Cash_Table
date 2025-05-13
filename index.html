@@ -8,25 +8,25 @@
 		<header><h1>Cash Table</h1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h3>Just Assess...</h3></header>
 		<main>
 			<div class="controllers" id="set-1">
-				<input type="text" class="txt-inputs" id="cash-table-name" placeholder="Table Name.." />
-				<a href="#">Create</a>
-				<select></select>
+				<input type="text" class="forms txt-inputs" id="cash-table-name" placeholder="Table Name.." />
+				<a href="#" class="add">Create</a>
 				<span>Create a Table.</span>
+				<label>Availalble Tables <select class="forms"></select></label>
 			</div>
 			<div class="controllers" id="set-2">
 				<div id="opt-1">
-					<input type="text" class="txt-inputs" id="cash-row-name" placeholder="Row Name" />
-					<a href="#">Create</a>
+					<input type="text" class="forms txt-inputs" id="cash-row-name" placeholder="Row Name" />
+					<a href="#" class="add">Create</a>
 					<span>Create Row.</span>
 				</div>
 				<div id="opt-2">
-					<a href="#" id="remove-column">Remove Row</a>
+					<a href="#" id="remove-row" class="remove">Remove Row</a>
 				</div>
 			</div>
 			<div class="controllers" id="set-3">
 				<div id="opt-1">
-					<input type="text" class="txt-inputs" id="cash-column-name" placeholder="Column Name" />
-					<a href="#" id="add-column">Go</a>
+					<input type="text" class="forms txt-inputs" id="cash-column-name" placeholder="Column Name" />
+					<a href="#" id="add-column" class="add">Go</a>
 					<span>Append a caption column.</span>
 				</div>
 				<div id="opt-2">
@@ -34,7 +34,7 @@
 				</div>
 			</div>
 			<div class="controllers" id="set-4">
-				<input type="text" class="txt-inputs" id="cell-data" placeholder="0.00" />
+				<input type="text" class="forms txt-inputs" id="cell-data" placeholder="0.00" />
 				<a href="#">Go</a>
 				<span>Select a <strong>Cell</strong> <em>(After you have appended caption columns.)</em> under a caption column to a particular row & apply a floating-point <em>(0.00)</em> number.</span>
 			</div>

@@ -2,18 +2,20 @@ $(function(){
 	let all_tables = [];
 	// let sel_state = [-1, [3, [0, 0]]];
 	// let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": [0, -1]}};
-	let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn([0, [-1, []]])}};
-	$("div#set-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
+	let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn([-1, [-1, []]])}};
+	$("div#set-1 label, div#set-2, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
 	$("div#set-1 input#cash-table-name").val("").focus();
 	
 	
 	$("div#set-1 a").click(function(){
 		let tableName = $("div#set-1 input#cash-table-name"), tableList = $("div#set-1 select");
 		if(tableName.val() != ""){
-			all_tables[all_tables.length] = [tableName.val(), []];
+			// all_tables[all_tables.length] = [tableName.val(), []];
+			all_tables = [[$(this).val(), []], ...all_tables];
 		}
 		if(all_tables.length > 0){
-			$("div#set-2").css("display", "block");
+			$("div#set-1 label").css("display", "inline-block");
+			$("div#set-1 label, div#set-2").css("display", "block");
 		}
 		tableName.val("").focus();
 		
@@ -22,14 +24,9 @@ $(function(){
 			struct += "<option value="+i+">"+all_tables[i][0]+"</option>";
 		}
 		tableList.html(struct);
-		// sel_state.table = $("div#set-1 select").val();
-		// sel_state.table = tableList.val();
+		sel_state.table = tableList.val();
 		
-		//if(tableList.val() != null){
-		//if(sel_state.table >= 0){
-			//tableList.find("option:eq("+tableList.val()+")").prop("selected", true);
-			tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
-		//}
+		tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
 		
 		return false;
 	});
@@ -37,9 +34,11 @@ $(function(){
 		if(e.key == "Enter"){
 			let tableList = $("div#set-1 select");
 			if($(this).val() != ""){
-				all_tables[all_tables.length] = [$(this).val(), []];
+				// all_tables[all_tables.length] = [$(this).val(), []];
+				all_tables = [[$(this).val(), []], ...all_tables];
 			}
 			if(all_tables.length > 0){
+				$("div#set-1 label").css("display", "inline-block");
 				$("div#set-2").css("display", "block");
 			}
 			$(this).val("").focus();
@@ -51,9 +50,7 @@ $(function(){
 			tableList.html(struct);
 			sel_state.table = $("div#set-1 select").val();
 			
-			//if(sel_state.table >= 0){
-				tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
-			//}
+			tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
 		}
 	});
 	
@@ -62,41 +59,53 @@ $(function(){
 	}
 	$("div#set-1 select").change(function(){
 		sel_state.table = $(this).val();
-		// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table], sel_state.controls.columnCount);
-		// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table]);
 		sel_state = process_table(all_tables[sel_state.table], sel_state);
 	});
 	
 	// ROWS
-	$("div#set-2 a").click(function(){
+	$("div#set-2 div#opt-1 a.add").click(function(){
 		let row_name = $("div#set-2 input#cash-row-name");
+		
+		/* if(row_name.val() != ""){
+			all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(row_name.val());
+		} */
+		// let rowName = (row_name.val() != "") ? row_name.val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
+		if(sel_state.controls.rowAndcolumn[0] >= 0){
+			all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = row_name.val();
+		}else{
+			all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(row_name.val());
+			row_name.val("");
+		}
+		row_name.focus();
+		// console.log(all_tables[sel_state.table], sel_state.controls.rowAndcolumn)
 		if(all_tables[sel_state.table][1].length > 0){
 			$("div#set-3").css("display", "block");
 		}
-		
-		if(row_name.val() != ""){
-			// all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = [0, 0, row_name.val(), 0];
-			all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(row_name.val());
-			// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table], sel_state.controls.columnCount);
-			// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table]);
-		}
-		row_name.val("").focus();
 		sel_state = process_table(all_tables[sel_state.table], sel_state);
 	});
 	$("div#set-2 input#cash-row-name").keyup(function(e){
 		if(e.key == "Enter"){
-			if($(this).val() != ""){
-				// all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = [0, 0, $(this).val(), 0];
+			/* if($(this).val() != ""){
 				all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow($(this).val());
-				// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table], sel_state.controls.columnCount);
-				// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table]);
+			} */
+			// let rowName = ($(this).val() != "") ? $(this).val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
+			if(sel_state.controls.rowAndcolumn[0] >= 0){
+				all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = $(this).val();
+			}else{
+				all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow($(this).val());
+				$(this).val("");
 			}
 			if(all_tables[sel_state.table][1].length > 0){
 				$("div#set-3").css("display", "block");
 			}
-			$(this).val("").focus();
+			$(this).focus();
 			sel_state = process_table(all_tables[sel_state.table], sel_state);
 		}
+	});
+	$('div#set-2 div#opt-2 a#remove-row').click(function(e){ // Remove selected row
+		all_tables[sel_state.table][1].splice(sel_state.controls.rowAndcolumn[0], 1)
+		sel_state.controls.rowAndcolumn[0] = -1;
+		sel_state = process_table(all_tables[sel_state.table], sel_state);
 	});
 	
 	// COLUMNS
@@ -107,15 +116,10 @@ $(function(){
 		
 		if(sel_state.controls.rowAndcolumn[1][0] >= 0){
 			if(column_name.val() != ""){
-				/* all_tables[sel_state.table][1].forEach((row, i) => { // Each row
-					all_tables[sel_state.table][1][i][4][sel_state.controls.rowAndcolumn[1][0]][0] = column_name.val();
-				}); */
 				sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] = column_name.val();
-				// $('div#set-3 div#opt-2').css('display', 'none');
 			}
 		}else{
 			sel_state.controls.rowAndcolumn = resetRowAndColumn(sel_state.controls.rowAndcolumn);
-			// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table], column_name.val());
 			let [sel_table, rowAndcolumn] = column_processor([all_tables[sel_state.table], sel_state.controls.rowAndcolumn], column_name.val());
 			all_tables[sel_state.table] = sel_table;
 			sel_state.controls.rowAndcolumn = rowAndcolumn;
@@ -129,20 +133,13 @@ $(function(){
 		if(e.key == "Enter"){
 			sel_state.controls.columnCount += 1;
 			$("div#set-4 input#cell-data").val("");
-			// let getInput = $(this).closest('div').find('input');
 			
 			if(sel_state.controls.rowAndcolumn[1][0] >= 0){
 				if($(this).val() != ""){
-					/* all_tables[sel_state.table][1].forEach((row, i) => { // Each row
-						// console.log(all_tables[sel_state.table][1][i]);
-						all_tables[sel_state.table][1][i][4][sel_state.controls.rowAndcolumn[1][0]][0] = $(this).val();
-					}); */
 					sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] = $(this).val();
-					// $('div#set-3 div#opt-2').css('display', 'none');
 				}
 			}else{
 				sel_state.controls.rowAndcolumn = resetRowAndColumn(sel_state.controls.rowAndcolumn);
-				// all_tables[sel_state.table] = column_processor(all_tables[sel_state.table], $(this).val());
 				let [sel_table, rowAndcolumn] = column_processor([all_tables[sel_state.table], sel_state.controls.rowAndcolumn], $(this).val());
 				all_tables[sel_state.table] = sel_table;
 				sel_state.controls.rowAndcolumn = rowAndcolumn;
@@ -159,9 +156,9 @@ $(function(){
 
 		all_tables[sel_state.table][1].forEach((row, i) => { // Each row
 			// console.log(all_tables[sel_state.table][1][i]);
-			all_tables[sel_state.table][1][i][4].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column
+			all_tables[sel_state.table][1][i][4].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the body
 		});
-		sel_state.controls.rowAndcolumn[1][1].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column
+		sel_state.controls.rowAndcolumn[1][1].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the caption
 		
 		sel_state.controls.rowAndcolumn[1][0] = -1;
 		sel_state = process_table(all_tables[sel_state.table], sel_state);
@@ -173,12 +170,10 @@ $(function(){
 		if(input_elem.val() !== ""){
 			let row = sel_state.controls.rowAndcolumn[0];
 			let cell = sel_state.controls.rowAndcolumn[1][0];
-			// all_tables[sel_state.table][1][row][cell] = $("div#set-4 input#cell-data").val();
 			all_tables[sel_state.table][1][row][4][cell] = input_elem.val();
 			
 			sel_state.controls.rowAndcolumn[0] = 0;
 			sel_state.controls.rowAndcolumn[1][0] = -1;
-			// $("div#set-4 input#cell-data").val("").focus();
 			input_elem.val("");
 			sel_state = process_table(all_tables[sel_state.table], sel_state);
 		}
@@ -191,7 +186,6 @@ $(function(){
 			
 			sel_state.controls.rowAndcolumn[0] = 0;
 			sel_state.controls.rowAndcolumn[1][0] = -1;
-			// $(this).val("").focus();
 			$(this).val("");
 			sel_state = process_table(all_tables[sel_state.table], sel_state);
 		}
@@ -211,24 +205,19 @@ $(function(){
 	}
 	return sel_table;
 } */
-// function column_processor(sel_table, column_name=""){
 function column_processor(data, column_name=""){
-	// let allRows = sel_table[1];
 	let allRows = data[0][1];
 	if(allRows.length > 0){
 		for(var i=0; i<allRows.length; i++){ // Loop through all rows
-			// sel_table[1][i][4].push([column_name, 0]); // Add new column with 0 value. Index 4 is the columns array
 			data[0][1][i][4].push(0); // Add new column with 0 value. Index 4 is the columns array
 		}
 		data[1][1][1].push(column_name);
 		
 		$('div#set-4').css('display', 'none');
-		// if(sel_table[1][0][4].length > 0){
 		if(data[0][1][0][4].length > 0){
 			$('div#set-4').css('display', 'block');
 		}
 	}
-	// return sel_table;
 	return data;
 }
 
@@ -244,18 +233,14 @@ function process_table(sel_table, sel_state){
 		sel_table[1].map((row, i) => { // Each row
 			sel_table[1][i][3] = 0; // Reset before adding up.
 			row[4].map((cell, j) => { // Each item in index 4, which is the columns array
-				// let cell_num = Number(cell[1]);
 				let cell_num = cell;
-				// if(!isNaN(cell_num)){
 					eachColumnsTotal[1][j] = sum_1([eachColumnsTotal[1][j], cell_num], 2); // Get the total sum-up of each column.
 					sel_table[1][i][3] = sum_1([sel_table[1][i][3], cell_num], 2); // Add up all the numbers into total column
 					// console.log("i: "+i, ", j: "+j, ", Cell: ", cell_num, ", Total: "+sel_table[1][i][3]);
-				// }
 			})
 		})
 		eachColumnsTotal[1].map(cell => eachColumnsTotal[0] = sum_1([eachColumnsTotal[0], cell], 2));
 
-		// let get_pos = function(allRows, new_data=[[], [], [-1, 0]], n=[[0, 1], [], 0]){
 		let get_pos = function(allRows, total, new_data=[[], [], [-1, 0]], n=[[0, 1], [], 0]){
 			if(new_data[0].length < allRows.length){
 				if(new_data[1].length == 0){ // On the very first call
@@ -369,10 +354,14 @@ function process_table(sel_table, sel_state){
 
 		// Every other row or the tables actual body. Subsequent body rows.
 		sel_table[1].map((row, i) => { // Each row
-			stat_struct += "<li id='"+i+"' class='row grps-body'>";
+			stat_struct += "<li id='"+i+"' class='row grps-body";
+			stat_struct += sel_state.controls.rowAndcolumn[0] == i ? " sel-row selected" : "";
+			stat_struct += "'>";
 				stat_struct += "<div class='column grps-num'>"+row[0]+"</div>";
 				stat_struct += "<div class='column grps-num'>"+row[1]+"</div>";
-				stat_struct += "<div class='column grps-names'>"+row[2]+"</div>";
+				stat_struct += "<div class='column grps-names'>";
+				stat_struct += row[2] == "" ? "Row "+(parseInt(i)+1) : row[2];
+				stat_struct += "</div>";
 				stat_struct += "<div class='column grps-total grps-data'><strong>"+filter_currency(row[3])+"</strong></div>";
 				row[4].map((cell, j) => { // Each item in index 4, which is the columns array
 					stat_struct += "<div class='column grps-data";
@@ -385,9 +374,7 @@ function process_table(sel_table, sel_state){
 							stat_struct += "";
 						}
 					}
-					// stat_struct += sel_state.controls.rowAndcolumn[1][0] == j && sel_state.controls.rowAndcolumn[0] < 2 ? "sel-column" : "";
 					stat_struct += "'>";
-						// stat_struct += "<span>"+filter_currency(eachColumnsTotal[cell[1]])+"</span>";
 						stat_struct += "<span>"+filter_currency(cell)+"</span>";
 					stat_struct += "</div>";
 				})
@@ -399,12 +386,10 @@ function process_table(sel_table, sel_state){
 	$("ul#set-1").empty().html(stat_struct);
 	
 	$("ul#set-1 li.grps-body div.grps-data").click(function(){
-		// if($(this).attr("id") > 3){
 		if($(this).index() > 3){
 			if(!$(this).is('.selected')){
 				$("ul#set-1 li div.grps-data").removeClass("selected");
 				$(this).addClass("selected");
-				// let row = $(this).closest("li").attr("id"), cell = $(this).attr("id");
 				let row = $(this).closest("li.grps-body").index()-2, cell = $(this).index()-4;
 				
 				sel_state.controls.rowAndcolumn[0] = row;
@@ -448,20 +433,49 @@ function process_table(sel_table, sel_state){
 			$("ul#set-1 li.row div.column").removeClass("sel-column");
 			
 			$(this).addClass("selected");
-			selectedColumn($(this), true);
+			selectedColumn($(this));
 			$('div#set-3 div#opt-2').css('display', 'block');
 			sel_state.controls.rowAndcolumn[1][0] = $(this).index()-4; // Get the index of the column cap - 4 because of the first 3 columns (S/N, Pos. & Name)
 			
 			$("div#set-3 div#opt-1 input#cash-column-name").val("").focus();
-			// if(sel_table[1][0][4][sel_state.controls.rowAndcolumn[1][0]][0] !== ""){
 			if(sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] !== ""){
-				// $("div#set-3 div#opt-1 input#cash-column-name").val(sel_table[1][0][4][sel_state.controls.rowAndcolumn[1][0]][0]).focus();
 				$("div#set-3 div#opt-1 input#cash-column-name").val(sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]]).focus();
 			}
-			// console.log(sel_state.controls.rowAndcolumn, sel_table[1]);
 			sel_state = process_table(sel_table, sel_state);
 		}
 	});
+
+	$('ul#set-1 li.grps-body').hover(
+		function(){
+			if(!$(this).is(".selected")){
+				selectedRow($(this))
+			}
+		},
+		function(){
+			if(!$(this).is(".selected")){
+				selectedRow($(this), false)
+			}
+		}
+	).click(function(){
+		$("div#set-2 div#opt-2").css("display", "none");
+		$('div#set-2 div#opt-1 input').val("").focus();
+		if($(this).is(".selected")){
+			$(this).removeClass("selected");
+			selectedRow($(this), false)
+			sel_state.controls.rowAndcolumn[0] = -1;
+		}else{
+			$('ul#set-1 li.grps-body').removeClass("selected");
+			$(this).addClass("selected");
+			selectedRow($(this))
+			sel_state.controls.rowAndcolumn[0] = $(this).attr('id');
+
+			$('div#set-2 div#opt-1 input').val(sel_table[1][sel_state.controls.rowAndcolumn[0]][2]);
+			if(sel_state.controls.rowAndcolumn[0] > -1){
+				$("div#set-2 div#opt-2").css("display", "block");
+			}
+		}
+		// console.log(sel_table[1], sel_state.controls.rowAndcolumn);
+	})
 	
 	return sel_state;
 }
@@ -518,34 +532,38 @@ function generateRow(rowName){
 	return [0, 0, rowName, 0.00, []]; // Position, Serial Number, Name, Total, numbers array
 }
 
-function selectedColumn(col_cap, selStates=true){
-	let col_index = col_cap.index();
-	// console.log($(this).attr("id"));
-	if(selStates){ // Column Cap selected state
-		$("ul#set-1 li.row").each(function(){
-			let li = $(this);
-			$(this).find("div.column").each(function(){
-				let cell = $(this).index();
-				if(cell == col_index && li.index() > 0){
-					$(this).addClass("sel-column");
-					// console.log("Cell: "+$(this).index());
-				}
-			})
+function selectedRow(row, selState=true){
+	if(selState){ // Row selected state
+		$('ul#set-1 li.grps-body').each(function(){
+			if(!$(this).is('.selected')){
+				$(this).removeClass('sel-row')
+			}
 		})
+		// $('ul#set-1 li.row').removeClass('sel-row')
+		row.addClass('sel-row');
 	}else{
-		$("ul#set-1 li.row").each(function(){
-			let li = $(this);
-			$(this).find("div.column").each(function(){
-				let cell = $(this).index();
-				if(cell == col_index && li.index() > 0){
+		row.removeClass('sel-row');
+	}
+}
+
+function selectedColumn(col_cap, selState=true){
+	let col_index = col_cap.index();
+	$("ul#set-1 li.row").each(function(){
+		let li = $(this);
+		$(this).find("div.column").each(function(){
+			let cell = $(this).index();
+			if(cell == col_index && li.index() > 0){
+				if(selState){ // Column Cap selected state
+					$(this).addClass("sel-column");
+				}else{
 					$(this).removeClass("sel-column");
 				}
-			})
+			}
 		})
-	}
+	})
 }
 
 function resetRowAndColumn(rowAndcolumn){
 	// return [0, -1];
-	return [0, [-1, rowAndcolumn[1][1].length > 0 ? rowAndcolumn[1][1] : []]];
+	return [-1, [-1, rowAndcolumn[1][1].length > 0 ? rowAndcolumn[1][1] : []]];
 }
