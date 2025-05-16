@@ -54,15 +54,19 @@ main a:hover{
 	opacity: .7;
 }
 
+div#tb-container{
+	width: 100%;
+	margin-top: 50px;
+	white-space: nowrap;
+	overflow: auto;
+}
 /* ul#set-1{ */
 table#set-1{
 	/* width: 100%; */
 	background-color: yellow;
 	list-style: none;
-	white-space: nowrap;
 	margin-top: 20px;
 	padding: 5px;
-	overflow: auto;
 	border: 2px solid #c55c06;
 }
 /* ul#set-1 li.row{ */

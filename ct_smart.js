@@ -1,9 +1,7 @@
 $(function(){
 	let all_tables = [];
 	// let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn([-1, [-1, []]])}};
-	let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn()}};
-	$("div#set-1 label, div#set-1 a.save-table, table#set-1, div#set-2, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
-	$("div#set-1 input#cash-table-name").val("").focus();
+	let sel_state = screenDefault();
 	
 	
 	$("div#set-1 a.save-table").click(function(){
@@ -25,7 +23,12 @@ $(function(){
 	}
 	$("div#set-1 select").change(function(){
 		sel_state.table = $(this).val();
+		sel_state.controls.rowAndcolumn[1][1] = all_tables[sel_state.table][2];
+		sel_state = screenDefault(all_tables, sel_state);
 		sel_state = process_table(all_tables[sel_state.table], sel_state);
+		$('table#set-1 tr.grps-body').each(function(){
+			sel_state = selectColumn($(this), all_tables[sel_state.table], sel_state, 1)
+		});
 	});
 	
 	// ROWS
@@ -40,7 +43,13 @@ $(function(){
 	$('div#set-2 div#opt-2 a#remove-row').click(function(e){ // Remove selected row
 		all_tables[sel_state.table][1].splice(sel_state.controls.rowAndcolumn[0], 1)
 		sel_state.controls.rowAndcolumn[0] = -1;
-		sel_state = process_table(all_tables[sel_state.table], sel_state);
+		if(all_tables[sel_state.table][1].length > 0){
+			sel_state = process_table(all_tables[sel_state.table], sel_state);
+		}else{
+			all_tables[sel_state.table][2] = [];
+			sel_state.controls.rowAndcolumn[1][1] = all_tables[sel_state.table][2];
+			sel_state = screenDefault(all_tables, sel_state);
+		}
 	});
 	
 	// COLUMNS
@@ -59,7 +68,9 @@ $(function(){
 			// console.log(all_tables[sel_state.table][1][i]);
 			all_tables[sel_state.table][1][i][4].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the body
 		});
-		sel_state.controls.rowAndcolumn[1][1].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the caption
+		all_tables[sel_state.table][2].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the caption
+		// sel_state.controls.rowAndcolumn[1][1].splice(sel_state.controls.rowAndcolumn[1][0], 1); // Remove the selected column on the caption
+		sel_state.controls.rowAndcolumn[1][1] = all_tables[sel_state.table][2];
 		
 		sel_state.controls.rowAndcolumn[1][0] = -1;
 		sel_state = process_table(all_tables[sel_state.table], sel_state);
@@ -77,6 +88,10 @@ $(function(){
 });
 
 function process_table(sel_table, sel_state){
+	if(sel_table[1].length > 0){
+		$("div#set-3").css("display", "block");
+		$("table#set-1, div#set-1 a.save-table").css("display", "inline-block");
+	}
 	let stat_struct = "";
 	
 	let allRows = sel_table[1];
@@ -183,12 +198,17 @@ function process_table(sel_table, sel_state){
 					// stat_struct += "<strong>Total</strong>";
 					stat_struct += "Total";
 				stat_struct += "</th>";
-				firstRow[4].map((col, i) => {
+		console.log("sel_state.controls.rowAndcolumn[1][1]")
+		console.log(sel_state.controls.rowAndcolumn[1][1])
+				// firstRow[4].map((col, i) => {
+				sel_state.controls.rowAndcolumn[1][1].map((col, i) => {
 					stat_struct += "<th class='column grps-data column-cap";
 					stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " selected" : "";
 					stat_struct += "'>";
 						// stat_struct += "<strong>";
-							stat_struct += sel_state.controls.rowAndcolumn[1][1][i] == "" ? "Cap. "+(i+1) : sel_state.controls.rowAndcolumn[1][1][i];
+		// console.log(col)
+							// stat_struct += sel_state.controls.rowAndcolumn[1][1][i] == "" ? "Cap. "+(i+1) : sel_state.controls.rowAndcolumn[1][1][i];
+							stat_struct += col == "" ? "Cap. "+(i+1) : col;
 						// stat_struct += "</strong>";
 					stat_struct += "</th>";
 				});
@@ -201,8 +221,9 @@ function process_table(sel_table, sel_state){
 				stat_struct += "<th class='column grps-names'></th>";
 				// stat_struct += "<th class='column grps-total grps-data'><strong>"+filter_currency(eachColumnsTotal[0])+"</strong></th>";
 				stat_struct += "<th class='column grps-total grps-data'>"+filter_currency(eachColumnsTotal[0])+"</th>";
-				firstRow[4].map((col, i) => {
-					stat_struct += "<th class='column grps-data";
+				// firstRow[4].map((col, i) => {
+				sel_state.controls.rowAndcolumn[1][1].map((col, i) => {
+					stat_struct += "<th class='column grps-total grps-data";
 					stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " sel-column" : "";
 					stat_struct += "'>";
 						// stat_struct += "<strong>"+filter_currency(eachColumnsTotal[1][i])+"</strong>";
@@ -265,12 +286,18 @@ function process_table(sel_table, sel_state){
 				let sel_cell = sel_table[1][row][4][cell];
 				$("div#set-4 input#cell-data").val(filter_currency(parseFloat(sel_cell))).focus();
 				sel_state = selectColumn($(this).closest("tr.grps-body"), sel_table, sel_state, 1)
+				
+				// $('div#set-4').css('display', 'none');
+				// if(data[0][1][0][4].length > 0){
+					$('div#set-4').css('display', 'block');
+				// }
 			}else{
 				// $("ul#set-1 li div.grps-data").removeClass("selected");
 				$("table#set-1 tr th.grps-data, table#set-1 tr td.grps-data").removeClass("selected");
 				$("div#set-4 input#cell-data").val("");
 				sel_state.controls.rowAndcolumn[1][0] = -1;
 				sel_state = selectColumn($(this).closest("tr.grps-body"), sel_table, sel_state)
+				$('div#set-4').css('display', 'none');
 			}
 		}
 	});
@@ -390,11 +417,34 @@ function filter_currency(num, per, places){
 	return aComma + cDec;
 }
 
+function screenDefault(all_tables=[], sel_state={}){
+	$("div#set-1 label, div#set-2").css("display", "none");
+	$("div#set-1 a.save-table, table#set-1, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
+	$("div#set-1 input#cash-table-name").val("").focus();
+	$('table#set-1').empty();
+	if(all_tables.length > 0){
+		// table = sel_state.table;
+		$("div#set-1 label").css("display", "inline-block");
+		$("div#set-2").css("display", "block");
+		if(all_tables[sel_state.table][1].length == 0){
+			sel_state.rowAndcolumn = resetRowAndColumn();
+		}
+	}else{
+		sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn()}};
+	}
+	console.log(all_tables)
+	
+	// return {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn()}};
+	return sel_state;
+}
+
 function createTable(tableElem, all_tables, sel_state){
-	let tableList = $("div#set-1 select");
-	if(tableElem.val() != ""){
-		// all_tables[all_tables.length] = [tableName.val(), []];
-		all_tables = [[tableElem.val(), []], ...all_tables];
+	let tbName = tableElem.val(), tableList = $("div#set-1 select");
+	if(tbName != ""){
+		sel_state = screenDefault();
+		
+		// all_tables[all_tables.length] = [tbName, []];
+		all_tables = [[tbName, [], []], ...all_tables];
 	}
 	if(all_tables.length > 0){
 		$("div#set-1 label").css("display", "inline-block");
@@ -417,7 +467,7 @@ function createTable(tableElem, all_tables, sel_state){
 function addRow(rowElem, all_tables, sel_state){
 	/* if(rowElem.val() != ""){
 		all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(rowElem.val());
-	} */
+		} */
 	// let rowName = (rowElem.val() != "") ? rowElem.val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
 	if(sel_state.controls.rowAndcolumn[0] >= 0){ // Update selected row
 		all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = rowElem.val();
@@ -426,10 +476,6 @@ function addRow(rowElem, all_tables, sel_state){
 		rowElem.val("");
 	}
 	rowElem.focus();
-	if(all_tables[sel_state.table][1].length > 0){
-		$("div#set-3").css("display", "block");
-		$("table#set-1, div#set-1 a.save-table").css("display", "inline-block");
-	}
 	sel_state = process_table(all_tables[sel_state.table], sel_state);
 	
 	return [all_tables, sel_state];
@@ -458,8 +504,7 @@ function addColum(colElem, all_tables, sel_state){
 }
 
 function updateCell(cellElem, all_tables, sel_state){
-	if(cellElem.val() !== "" && !isNaN(cellElem)){
-		console.log(all_tables[sel_state.table], sel_state.controls.rowAndcolumn)
+	if(cellElem.val() !== "" && !isNaN(cellElem.val())){
 		let row = sel_state.controls.rowAndcolumn[0];
 		let cell = sel_state.controls.rowAndcolumn[1][0];
 		all_tables[sel_state.table][1][row][4][cell] = cellElem.val();
@@ -539,12 +584,9 @@ function column_processor(data, type=0, column_name=""){
 			for(var i=0; i<allRows.length; i++){ // Loop through all rows
 				data[0][1][i][4].push(0); // Add new column with 0 value. Index 4 is the columns array
 			}
-			data[1][1][1].push(column_name);
-			
-			$('div#set-4').css('display', 'none');
-			if(data[0][1][0][4].length > 0){
-				$('div#set-4').css('display', 'block');
-			}
+			data[0][2].push(column_name);
+			// data[1][1][1].push(column_name);
+			data[1][1][1] = data[0][2];
 		}
 	}
 	return data;
