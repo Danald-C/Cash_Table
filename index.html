@@ -12,6 +12,7 @@
 				<a href="#" class="add">Create</a>
 				<span>Create a Table.</span>
 				<label>Availalble Tables <select class="forms"></select></label>
+				<a href="#" class="save-table change">Save Table</a>
 			</div>
 			<div class="controllers" id="set-2">
 				<div id="opt-1">
@@ -26,23 +27,35 @@
 			<div class="controllers" id="set-3">
 				<div id="opt-1">
 					<input type="text" class="forms txt-inputs" id="cash-column-name" placeholder="Column Name" />
-					<a href="#" id="add-column" class="add">Go</a>
+					<a href="#" id="add-column" class="add">Append</a>
 					<span>Append a caption column.</span>
 				</div>
 				<div id="opt-2">
-					<a href="#" id="remove-column">Remove Column</a>
+					<a href="#" id="remove-column" class="remove">Remove Column</a>
 				</div>
 			</div>
 			<div class="controllers" id="set-4">
 				<input type="text" class="forms txt-inputs" id="cell-data" placeholder="0.00" />
-				<a href="#">Go</a>
+				<a href="#" class="add">Update</a>
 				<span>Select a <strong>Cell</strong> <em>(After you have appended caption columns.)</em> under a caption column to a particular row & apply a floating-point <em>(0.00)</em> number.</span>
 			</div>
-			<ul id="set-1"></ul>
+			<!-- <ul id="set-1"></ul> -->
+			<table id="set-1"></table>
 		</main>
 		<footer>Developed by: David <span>Kwadwo Sarfroh Danquah</span>. Contact me on: Email: <span>kwadjodanq@gmail.com</span> +233 558 244996</footer>
 	
-	<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+	<!-- <script type="text/javascript" src="jquery-1.9.1.min.js"></script> -->
+	
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+	
 	<script type="text/javascript" src="ct_smart.js"></script>
 	</body>
 </html>

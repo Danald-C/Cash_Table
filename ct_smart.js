@@ -1,56 +1,22 @@
 $(function(){
 	let all_tables = [];
-	// let sel_state = [-1, [3, [0, 0]]];
-	// let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": [0, -1]}};
-	let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn([-1, [-1, []]])}};
-	$("div#set-1 label, div#set-2, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
+	// let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn([-1, [-1, []]])}};
+	let sel_state = {"table": -1, "controls": {"columnCount": 0, "rowAndcolumn": resetRowAndColumn()}};
+	$("div#set-1 label, div#set-1 a.save-table, table#set-1, div#set-2, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
 	$("div#set-1 input#cash-table-name").val("").focus();
 	
 	
-	$("div#set-1 a").click(function(){
-		let tableName = $("div#set-1 input#cash-table-name"), tableList = $("div#set-1 select");
-		if(tableName.val() != ""){
-			// all_tables[all_tables.length] = [tableName.val(), []];
-			all_tables = [[$(this).val(), []], ...all_tables];
-		}
-		if(all_tables.length > 0){
-			$("div#set-1 label").css("display", "inline-block");
-			$("div#set-1 label, div#set-2").css("display", "block");
-		}
-		tableName.val("").focus();
-		
-		let struct = "";
-		for(let i=0; i<all_tables.length; i++){
-			struct += "<option value="+i+">"+all_tables[i][0]+"</option>";
-		}
-		tableList.html(struct);
-		sel_state.table = tableList.val();
-		
-		tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
+	$("div#set-1 a.save-table").click(function(){
+		saveToExcel();
+	});
+	$("div#set-1 a.add").click(function(){
+		[all_tables, sel_state] = createTable($("div#set-1 input#cash-table-name"), all_tables, sel_state);
 		
 		return false;
 	});
 	$("div#set-1 input#cash-table-name").keyup(function(e){
 		if(e.key == "Enter"){
-			let tableList = $("div#set-1 select");
-			if($(this).val() != ""){
-				// all_tables[all_tables.length] = [$(this).val(), []];
-				all_tables = [[$(this).val(), []], ...all_tables];
-			}
-			if(all_tables.length > 0){
-				$("div#set-1 label").css("display", "inline-block");
-				$("div#set-2").css("display", "block");
-			}
-			$(this).val("").focus();
-			
-			let struct = "";
-			for(let i=0; i<all_tables.length; i++){
-				struct += "<option value="+i+">"+all_tables[i][0]+"</option>";
-			}
-			tableList.html(struct);
-			sel_state.table = $("div#set-1 select").val();
-			
-			tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
+			[all_tables, sel_state] = createTable($(this), all_tables, sel_state);
 		}
 	});
 	
@@ -64,42 +30,11 @@ $(function(){
 	
 	// ROWS
 	$("div#set-2 div#opt-1 a.add").click(function(){
-		let row_name = $("div#set-2 input#cash-row-name");
-		
-		/* if(row_name.val() != ""){
-			all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(row_name.val());
-		} */
-		// let rowName = (row_name.val() != "") ? row_name.val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
-		if(sel_state.controls.rowAndcolumn[0] >= 0){
-			all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = row_name.val();
-		}else{
-			all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(row_name.val());
-			row_name.val("");
-		}
-		row_name.focus();
-		// console.log(all_tables[sel_state.table], sel_state.controls.rowAndcolumn)
-		if(all_tables[sel_state.table][1].length > 0){
-			$("div#set-3").css("display", "block");
-		}
-		sel_state = process_table(all_tables[sel_state.table], sel_state);
+		[all_tables, sel_state] = addRow($("div#set-2 input#cash-row-name"), all_tables, sel_state);
 	});
 	$("div#set-2 input#cash-row-name").keyup(function(e){
 		if(e.key == "Enter"){
-			/* if($(this).val() != ""){
-				all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow($(this).val());
-			} */
-			// let rowName = ($(this).val() != "") ? $(this).val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
-			if(sel_state.controls.rowAndcolumn[0] >= 0){
-				all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = $(this).val();
-			}else{
-				all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow($(this).val());
-				$(this).val("");
-			}
-			if(all_tables[sel_state.table][1].length > 0){
-				$("div#set-3").css("display", "block");
-			}
-			$(this).focus();
-			sel_state = process_table(all_tables[sel_state.table], sel_state);
+			[all_tables, sel_state] = addRow($(this), all_tables, sel_state);
 		}
 	});
 	$('div#set-2 div#opt-2 a#remove-row').click(function(e){ // Remove selected row
@@ -110,45 +45,11 @@ $(function(){
 	
 	// COLUMNS
 	$("div#set-3 div#opt-1 a#add-column").click(function(){
-		sel_state.controls.columnCount += 1;
-		$("div#set-4 input#cell-data").val("");
-		let column_name = $(this).closest('div').find('input#cash-column-name');
-		
-		if(sel_state.controls.rowAndcolumn[1][0] >= 0){
-			if(column_name.val() != ""){
-				sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] = column_name.val();
-			}
-		}else{
-			sel_state.controls.rowAndcolumn = resetRowAndColumn(sel_state.controls.rowAndcolumn);
-			let [sel_table, rowAndcolumn] = column_processor([all_tables[sel_state.table], sel_state.controls.rowAndcolumn], column_name.val());
-			all_tables[sel_state.table] = sel_table;
-			sel_state.controls.rowAndcolumn = rowAndcolumn;
-			column_name.val("");
-		}
-		
-		column_name.focus();
-		sel_state = process_table(all_tables[sel_state.table], sel_state);
+		[all_tables, sel_state] = addColum($(this).closest('div').find('input#cash-column-name'), all_tables, sel_state);
 	});
 	$("div#set-3 input#cash-column-name").keyup(function(e){
 		if(e.key == "Enter"){
-			sel_state.controls.columnCount += 1;
-			$("div#set-4 input#cell-data").val("");
-			
-			if(sel_state.controls.rowAndcolumn[1][0] >= 0){
-				if($(this).val() != ""){
-					sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] = $(this).val();
-				}
-			}else{
-				sel_state.controls.rowAndcolumn = resetRowAndColumn(sel_state.controls.rowAndcolumn);
-				let [sel_table, rowAndcolumn] = column_processor([all_tables[sel_state.table], sel_state.controls.rowAndcolumn], $(this).val());
-				all_tables[sel_state.table] = sel_table;
-				sel_state.controls.rowAndcolumn = rowAndcolumn;
-				$(this).val("");
-			}
-			// console.log(all_tables[sel_state.table]);
-			
-			$(this).focus();
-			sel_state = process_table(all_tables[sel_state.table], sel_state);
+			[all_tables, sel_state] = addColum($(this), all_tables, sel_state);
 		}
 	});
 	$('div#set-3 div#opt-2 a#remove-column').click(function(e){ // Remove selected column
@@ -166,60 +67,14 @@ $(function(){
 	
 	// UPDATE A CELL
 	$("div#set-4 a").click(function(){
-		let input_elem = $("div#set-4 input#cell-data");
-		if(input_elem.val() !== ""){
-			let row = sel_state.controls.rowAndcolumn[0];
-			let cell = sel_state.controls.rowAndcolumn[1][0];
-			all_tables[sel_state.table][1][row][4][cell] = input_elem.val();
-			
-			sel_state.controls.rowAndcolumn[0] = 0;
-			sel_state.controls.rowAndcolumn[1][0] = -1;
-			input_elem.val("");
-			sel_state = process_table(all_tables[sel_state.table], sel_state);
-		}
+		[all_tables, sel_state] = updateCell($("div#set-4 input#cell-data"), all_tables, sel_state);
 	});
 	$("div#set-4 input#cell-data").keyup(function(e){
-		if(e.key == "Enter" && $(this).val() !== ""){
-			let row = sel_state.controls.rowAndcolumn[0];
-			let cell = sel_state.controls.rowAndcolumn[1][0];
-			all_tables[sel_state.table][1][row][4][cell] = $(this).val();
-			
-			sel_state.controls.rowAndcolumn[0] = 0;
-			sel_state.controls.rowAndcolumn[1][0] = -1;
-			$(this).val("");
-			sel_state = process_table(all_tables[sel_state.table], sel_state);
+		if(e.key == "Enter"){
+			[all_tables, sel_state] = updateCell($(this), all_tables, sel_state);
 		}
 	});
 });
-
-/* function column_processor(sel_table, new_i){
-	let allRows = sel_table[1];
-	if(allRows.length > 0){
-		for(var i=0; i<allRows.length; i++){ // Loop through all rows
-			let this_i = new_i - (allRows[i].length-1); // Subtract existing columns from new column count
-			// console.log(new_i, this_i);
-			for(var j=0; j<this_i; j++){ // Loop through new columns
-				sel_table[1][i][sel_table[1][i].length] = 0; // Add new column with 0 value
-			}
-		}
-	}
-	return sel_table;
-} */
-function column_processor(data, column_name=""){
-	let allRows = data[0][1];
-	if(allRows.length > 0){
-		for(var i=0; i<allRows.length; i++){ // Loop through all rows
-			data[0][1][i][4].push(0); // Add new column with 0 value. Index 4 is the columns array
-		}
-		data[1][1][1].push(column_name);
-		
-		$('div#set-4').css('display', 'none');
-		if(data[0][1][0][4].length > 0){
-			$('div#set-4').css('display', 'block');
-		}
-	}
-	return data;
-}
 
 function process_table(sel_table, sel_state){
 	let stat_struct = "";
@@ -234,9 +89,9 @@ function process_table(sel_table, sel_state){
 			sel_table[1][i][3] = 0; // Reset before adding up.
 			row[4].map((cell, j) => { // Each item in index 4, which is the columns array
 				let cell_num = cell;
-					eachColumnsTotal[1][j] = sum_1([eachColumnsTotal[1][j], cell_num], 2); // Get the total sum-up of each column.
-					sel_table[1][i][3] = sum_1([sel_table[1][i][3], cell_num], 2); // Add up all the numbers into total column
-					// console.log("i: "+i, ", j: "+j, ", Cell: ", cell_num, ", Total: "+sel_table[1][i][3]);
+				eachColumnsTotal[1][j] = sum_1([eachColumnsTotal[1][j], cell_num], 2); // Get the total sum-up of each column.
+				sel_table[1][i][3] = sum_1([sel_table[1][i][3], cell_num], 2); // Add up all the numbers into total column
+				// console.log("i: "+i, ", j: "+j, ", Cell: ", cell_num, ", Total: "+sel_table[1][i][3]);
 			})
 		})
 		eachColumnsTotal[1].map(cell => eachColumnsTotal[0] = sum_1([eachColumnsTotal[0], cell], 2));
@@ -310,61 +165,67 @@ function process_table(sel_table, sel_state){
 
 		// # TABLE MAKE-UP
 		// Head/Caption row
-		stat_struct += "<li class='row grps-head'>"; // Create a head/caption row using the structure of the first row.
-			stat_struct += "<div class='column grps-num'>";
-				stat_struct += "<strong>S/N</strong>";
-			stat_struct += "</div>";
-			stat_struct += "<div class='column grps-num'>";
-				stat_struct += "<strong>Pos.</strong>";
-			stat_struct += "</div>";
-			stat_struct += "<div class='column grps-names'>";
-				stat_struct += "<strong>Name</strong>";
-			stat_struct += "</div>";
-			stat_struct += "<div class='column grps-total grps-data'>";
-				stat_struct += "<strong>Total</strong>";
-			stat_struct += "</div>";
-			firstRow[4].map((col, i) => {
-				stat_struct += "<div class='column grps-data column-cap";
-				stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " selected" : "";
-				stat_struct += "'>";
-					stat_struct += "<strong>";
-						// stat_struct += col[0] == "" ? "Cap. "+(i+1) : col[0];
-						stat_struct += sel_state.controls.rowAndcolumn[1][1][i] == "" ? "Cap. "+(i+1) : sel_state.controls.rowAndcolumn[1][1][i];
-					stat_struct += "</strong>";
-				stat_struct += "</div>";
-			});
-		stat_struct += "</li>";
+		stat_struct += "<thead>"; // Create a head/caption row using the structure of the first row.
+			stat_struct += "<tr class='row grps-head'>";
+				stat_struct += "<th class='column grps-num'>";
+					// stat_struct += "<strong>S/N</strong>";
+					stat_struct += "S/N";
+				stat_struct += "</th>";
+				stat_struct += "<th class='column grps-num'>";
+					// stat_struct += "<strong>Pos.</strong>";
+					stat_struct += "Pos.";
+				stat_struct += "</th>";
+				stat_struct += "<th class='column grps-names'>";
+					// stat_struct += "<strong>Name</strong>";
+					stat_struct += "Name";
+				stat_struct += "</th>";
+				stat_struct += "<th class='column grps-total grps-data'>";
+					// stat_struct += "<strong>Total</strong>";
+					stat_struct += "Total";
+				stat_struct += "</th>";
+				firstRow[4].map((col, i) => {
+					stat_struct += "<th class='column grps-data column-cap";
+					stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " selected" : "";
+					stat_struct += "'>";
+						// stat_struct += "<strong>";
+							stat_struct += sel_state.controls.rowAndcolumn[1][1][i] == "" ? "Cap. "+(i+1) : sel_state.controls.rowAndcolumn[1][1][i];
+						// stat_struct += "</strong>";
+					stat_struct += "</th>";
+				});
+			stat_struct += "</tr>";
 			
-		// Row to hold totals of every column
-		stat_struct += "<li class='row grps-head'>"; // Now create a second row to hold the total of every column using the structure of the first row.
-			stat_struct += "<div class='column grps-num'></div>";
-			stat_struct += "<div class='column grps-num'></div>";
-			stat_struct += "<div class='column grps-names'></div>";
-			stat_struct += "<div class='column grps-total grps-data'><strong>"+filter_currency(eachColumnsTotal[0])+"</strong></div>";
-			firstRow[4].map((col, i) => {
-				stat_struct += "<div class='column grps-data";
-				stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " sel-column" : "";
-				stat_struct += "'>";
-					// stat_struct += "<strong>"+filter_currency(eachColumnsTotal[col[1]])+"</strong>";
-					stat_struct += "<strong>"+filter_currency(eachColumnsTotal[1][i])+"</strong>";
-				stat_struct += "</div>";
-			});
-		stat_struct += "</li>";
-		// console.log(stat_struct)
-
+			// Row to hold totals of every column
+			stat_struct += "<tr class='row grps-head'>"; // Now create a second row to hold the total of every column using the structure of the first row.
+				stat_struct += "<th class='column grps-num'></th>";
+				stat_struct += "<th class='column grps-num'></th>";
+				stat_struct += "<th class='column grps-names'></th>";
+				// stat_struct += "<th class='column grps-total grps-data'><strong>"+filter_currency(eachColumnsTotal[0])+"</strong></th>";
+				stat_struct += "<th class='column grps-total grps-data'>"+filter_currency(eachColumnsTotal[0])+"</th>";
+				firstRow[4].map((col, i) => {
+					stat_struct += "<th class='column grps-data";
+					stat_struct += sel_state.controls.rowAndcolumn[1][0] == i ? " sel-column" : "";
+					stat_struct += "'>";
+						// stat_struct += "<strong>"+filter_currency(eachColumnsTotal[1][i])+"</strong>";
+						stat_struct += filter_currency(eachColumnsTotal[1][i]);
+					stat_struct += "</th>";
+				});
+			stat_struct += "</tr>";
+		stat_struct += "</thead>";
+		
 		// Every other row or the tables actual body. Subsequent body rows.
+		stat_struct += "</tbody>";
 		sel_table[1].map((row, i) => { // Each row
-			stat_struct += "<li id='"+i+"' class='row grps-body";
-			stat_struct += sel_state.controls.rowAndcolumn[0] == i ? " sel-row selected" : "";
-			stat_struct += "'>";
-				stat_struct += "<div class='column grps-num'>"+row[0]+"</div>";
-				stat_struct += "<div class='column grps-num'>"+row[1]+"</div>";
-				stat_struct += "<div class='column grps-names'>";
-				stat_struct += row[2] == "" ? "Row "+(parseInt(i)+1) : row[2];
-				stat_struct += "</div>";
-				stat_struct += "<div class='column grps-total grps-data'><strong>"+filter_currency(row[3])+"</strong></div>";
+			stat_struct += "<tr id='"+i+"' class='row grps-body";
+				stat_struct += sel_state.controls.rowAndcolumn[0] == i ? " sel-row selected" : "";
+				stat_struct += "'>";
+				stat_struct += "<td class='column grps-num'>"+row[0]+"</td>";
+				stat_struct += "<th class='column grps-num'>"+row[1]+"</th>";
+				stat_struct += "<td class='column grps-names ta-left'>";
+					stat_struct += row[2] == "" ? "Row "+(parseInt(i)+1) : row[2];
+				stat_struct += "</td>";
+				stat_struct += "<th class='column grps-total grps-data'>"+filter_currency(row[3])+"</th>";
 				row[4].map((cell, j) => { // Each item in index 4, which is the columns array
-					stat_struct += "<div class='column grps-data";
+					stat_struct += "<td class='column grps-data";
 					if(sel_state.controls.rowAndcolumn[1][0] == j){
 						if(sel_state.controls.rowAndcolumn[0] < 2){
 							stat_struct += " sel-column";
@@ -375,51 +236,61 @@ function process_table(sel_table, sel_state){
 						}
 					}
 					stat_struct += "'>";
-						stat_struct += "<span>"+filter_currency(cell)+"</span>";
-					stat_struct += "</div>";
+					stat_struct += "<span>"+filter_currency(cell)+"</span>";
+					stat_struct += "</td>";
 				})
-			stat_struct += "</li>";
+			stat_struct += "</tr>";
 		})
+		stat_struct += "</tbody>";
 	}else{
-		stat_struct += "<li></li>";
+		// stat_struct += "<li></li>";
+		stat_struct += "<tr></tr>";
 	}
-	$("ul#set-1").empty().html(stat_struct);
+	// $("ul#set-1").empty().html(stat_struct);
+	$("table#set-1").empty().html(stat_struct);
 	
-	$("ul#set-1 li.grps-body div.grps-data").click(function(){
-		if($(this).index() > 3){
+	// $("ul#set-1 li.grps-body div.grps-data").click(function(){
+	$("table#set-1 tr.grps-body th.grps-data, table#set-1 tr.grps-body td.grps-data").click(function(){
+		if($(this).index() > 3){ // Only cells beyond total
 			if(!$(this).is('.selected')){
-				$("ul#set-1 li div.grps-data").removeClass("selected");
+				// $("ul#set-1 li div.grps-data").removeClass("selected");
+				$("table#set-1 tr th.grps-data, table#set-1 tr td.grps-data").removeClass("selected");
 				$(this).addClass("selected");
-				let row = $(this).closest("li.grps-body").index()-2, cell = $(this).index()-4;
+				// let row = $(this).closest("li.grps-body").index()-2, cell = $(this).index()-4;
+				let row = $(this).closest("tr.grps-body").index(), cell = $(this).index()-4;
+				// console.log(row)
 				
 				sel_state.controls.rowAndcolumn[0] = row;
 				sel_state.controls.rowAndcolumn[1][0] = cell;
 				let sel_cell = sel_table[1][row][4][cell];
-				$("div#set-4 input#cell-data").val(parseFloat(sel_cell)).focus();
+				$("div#set-4 input#cell-data").val(filter_currency(parseFloat(sel_cell))).focus();
+				sel_state = selectColumn($(this).closest("tr.grps-body"), sel_table, sel_state, 1)
 			}else{
-				$("ul#set-1 li div.grps-data").removeClass("selected");
+				// $("ul#set-1 li div.grps-data").removeClass("selected");
+				$("table#set-1 tr th.grps-data, table#set-1 tr td.grps-data").removeClass("selected");
 				$("div#set-4 input#cell-data").val("");
 				sel_state.controls.rowAndcolumn[1][0] = -1;
+				sel_state = selectColumn($(this).closest("tr.grps-body"), sel_table, sel_state)
 			}
 		}
 	});
 
-	$('ul#set-1 li.grps-head div.column-cap').hover(
+	// $('ul#set-1 li.grps-head div.column-cap').hover(
+	$('table#set-1 tr.grps-head th.column-cap, table#set-1 tr.grps-head td.column-cap').hover(
 		function(){
-			let col_cap = $(this);
-			if(!col_cap.is(".selected")){
-				selectedColumn(col_cap, true);
+			if(!$(this).is(".selected")){
+				selectedColumn($(this), true);
 			}
 		},
 		function(){
-			let col_cap = $(this);
-			if(!col_cap.is(".selected")){
-				selectedColumn(col_cap, false);
+			if(!$(this).is(".selected")){
+				selectedColumn($(this), false);
 			}
 		}
 	).click(function(){
 		if($(this).is(".selected")){ // Remove selected column's class
-			$("ul#set-1 li.row div.column").removeClass("sel-column");
+			// $("ul#set-1 li.row div.column").removeClass("sel-column");
+			$("table#set-1 tr.row th.column, table#set-1 tr.row td.column").removeClass("sel-column");
 
 			$(this).removeClass("selected");
 			selectedColumn($(this), false);
@@ -429,8 +300,10 @@ function process_table(sel_table, sel_state){
 			sel_state.controls.rowAndcolumn[1][0] = -1;
 			sel_state = process_table(sel_table, sel_state);
 		}else{ // Add selected column's class
-			$('ul#set-1 li.grps-head div.column-cap').removeClass("selected");
-			$("ul#set-1 li.row div.column").removeClass("sel-column");
+			// $('ul#set-1 li.grps-head div.column-cap').removeClass("selected");
+			$('table#set-1 tr.grps-head th.column-cap').removeClass("selected");
+			// $("ul#set-1 li.row div.column").removeClass("sel-column");
+			$("table#set-1 tr.row th.column, table#set-1 tr.row td.column").removeClass("sel-column");
 			
 			$(this).addClass("selected");
 			selectedColumn($(this));
@@ -445,34 +318,23 @@ function process_table(sel_table, sel_state){
 		}
 	});
 
-	$('ul#set-1 li.grps-body').hover(
+	// $('ul#set-1 li.grps-body').hover(
+	$('table#set-1 tr.grps-body').hover(
 		function(){
 			if(!$(this).is(".selected")){
-				selectedRow($(this))
+				hoveredRow($(this))
 			}
 		},
 		function(){
 			if(!$(this).is(".selected")){
-				selectedRow($(this), false)
+				hoveredRow($(this), false)
 			}
 		}
 	).click(function(){
-		$("div#set-2 div#opt-2").css("display", "none");
-		$('div#set-2 div#opt-1 input').val("").focus();
 		if($(this).is(".selected")){
-			$(this).removeClass("selected");
-			selectedRow($(this), false)
-			sel_state.controls.rowAndcolumn[0] = -1;
+			sel_state = selectColumn($(this), sel_table, sel_state, 1)
 		}else{
-			$('ul#set-1 li.grps-body').removeClass("selected");
-			$(this).addClass("selected");
-			selectedRow($(this))
-			sel_state.controls.rowAndcolumn[0] = $(this).attr('id');
-
-			$('div#set-2 div#opt-1 input').val(sel_table[1][sel_state.controls.rowAndcolumn[0]][2]);
-			if(sel_state.controls.rowAndcolumn[0] > -1){
-				$("div#set-2 div#opt-2").css("display", "block");
-			}
+			sel_state = selectColumn($(this), sel_table, sel_state)
 		}
 		// console.log(sel_table[1], sel_state.controls.rowAndcolumn);
 	})
@@ -528,13 +390,97 @@ function filter_currency(num, per, places){
 	return aComma + cDec;
 }
 
-function generateRow(rowName){
-	return [0, 0, rowName, 0.00, []]; // Position, Serial Number, Name, Total, numbers array
+function createTable(tableElem, all_tables, sel_state){
+	let tableList = $("div#set-1 select");
+	if(tableElem.val() != ""){
+		// all_tables[all_tables.length] = [tableName.val(), []];
+		all_tables = [[tableElem.val(), []], ...all_tables];
+	}
+	if(all_tables.length > 0){
+		$("div#set-1 label").css("display", "inline-block");
+		$("div#set-2").css("display", "block");
+	}
+	tableElem.val("").focus();
+	
+	let struct = "";
+	for(let i=0; i<all_tables.length; i++){
+		struct += "<option value="+i+">"+all_tables[i][0]+"</option>";
+	}
+	tableList.html(struct);
+	sel_state.table = tableList.val();
+	
+	// tableList.find("option:eq("+sel_state.table+")").prop("selected", true);
+
+	return [all_tables, sel_state];
 }
 
-function selectedRow(row, selState=true){
+function addRow(rowElem, all_tables, sel_state){
+	/* if(rowElem.val() != ""){
+		all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(rowElem.val());
+	} */
+	// let rowName = (rowElem.val() != "") ? rowElem.val() : "Row "+(sel_state.controls.rowAndcolumn[0] >= 0) ? parseInt(sel_state.controls.rowAndcolumn[0])+1 : all_tables[sel_state.table][1].length;
+	if(sel_state.controls.rowAndcolumn[0] >= 0){ // Update selected row
+		all_tables[sel_state.table][1][sel_state.controls.rowAndcolumn[0]][2] = rowElem.val();
+	}else{ // Add new row
+		all_tables[sel_state.table][1][all_tables[sel_state.table][1].length] = generateRow(rowElem.val(), [all_tables[sel_state.table], sel_state.controls.rowAndcolumn, []]);
+		rowElem.val("");
+	}
+	rowElem.focus();
+	if(all_tables[sel_state.table][1].length > 0){
+		$("div#set-3").css("display", "block");
+		$("table#set-1, div#set-1 a.save-table").css("display", "inline-block");
+	}
+	sel_state = process_table(all_tables[sel_state.table], sel_state);
+	
+	return [all_tables, sel_state];
+}
+
+function addColum(colElem, all_tables, sel_state){
+	sel_state.controls.columnCount += 1;
+	$("div#set-4 input#cell-data").val("");
+	
+	if(sel_state.controls.rowAndcolumn[1][0] >= 0){
+		if(colElem.val() != ""){
+			sel_state.controls.rowAndcolumn[1][1][sel_state.controls.rowAndcolumn[1][0]] = colElem.val();
+		}
+	}else{
+		sel_state.controls.rowAndcolumn = resetRowAndColumn(sel_state.controls.rowAndcolumn);
+		let [sel_table, rowAndcolumn] = column_processor([all_tables[sel_state.table], sel_state.controls.rowAndcolumn, []], 0, colElem.val());
+		all_tables[sel_state.table] = sel_table;
+		sel_state.controls.rowAndcolumn = rowAndcolumn;
+		colElem.val("");
+	}
+	
+	colElem.focus();
+	sel_state = process_table(all_tables[sel_state.table], sel_state);
+	
+	return [all_tables, sel_state];
+}
+
+function updateCell(cellElem, all_tables, sel_state){
+	if(cellElem.val() !== "" && !isNaN(cellElem)){
+		console.log(all_tables[sel_state.table], sel_state.controls.rowAndcolumn)
+		let row = sel_state.controls.rowAndcolumn[0];
+		let cell = sel_state.controls.rowAndcolumn[1][0];
+		all_tables[sel_state.table][1][row][4][cell] = cellElem.val();
+		
+		sel_state.controls.rowAndcolumn[0] = 0;
+		sel_state.controls.rowAndcolumn[1][0] = -1;
+		cellElem.val("");
+		sel_state = process_table(all_tables[sel_state.table], sel_state);
+	}
+
+	return [all_tables, sel_state];
+}
+
+function generateRow(rowName, data){
+	return [0, 0, rowName, 0.00, column_processor(data, 1)[2]]; // Position, Serial Number, Name, Total, numbers array
+}
+
+function hoveredRow(row, selState=true){
 	if(selState){ // Row selected state
-		$('ul#set-1 li.grps-body').each(function(){
+		// $('ul#set-1 li.grps-body').each(function(){
+		$('table#set-1 tr.grps-body').each(function(){
 			if(!$(this).is('.selected')){
 				$(this).removeClass('sel-row')
 			}
@@ -545,14 +491,75 @@ function selectedRow(row, selState=true){
 		row.removeClass('sel-row');
 	}
 }
+function selectColumn(row, sel_table, sel_state, type=0){
+	$("div#set-2 div#opt-2").css("display", "none");
+	$('div#set-2 div#opt-1 input').val("").focus();
+	if(type == 1){
+		row.removeClass("selected");
+		hoveredRow(row, false)
+		sel_state.controls.rowAndcolumn[0] = -1;
+	}else{
+		// $('ul#set-1 li.grps-body').removeClass("selected");
+		$('table#set-1 tr.grps-body').removeClass("selected");
+		row.addClass("selected");
+		hoveredRow(row)
+		sel_state.controls.rowAndcolumn[0] = row.attr('id');
+
+		$('div#set-2 div#opt-1 input').val(sel_table[1][sel_state.controls.rowAndcolumn[0]][2]);
+		if(sel_state.controls.rowAndcolumn[0] > -1){
+			$("div#set-2 div#opt-2").css("display", "block");
+		}
+	}
+
+	return sel_state;
+}
+
+/* function column_processor(sel_table, new_i){
+	let allRows = sel_table[1];
+	if(allRows.length > 0){
+		for(var i=0; i<allRows.length; i++){ // Loop through all rows
+			let this_i = new_i - (allRows[i].length-1); // Subtract existing columns from new column count
+			// console.log(new_i, this_i);
+			for(var j=0; j<this_i; j++){ // Loop through new columns
+				sel_table[1][i][sel_table[1][i].length] = 0; // Add new column with 0 value
+			}
+		}
+	}
+	return sel_table;
+} */
+// function column_processor(data, column_name=""){
+function column_processor(data, type=0, column_name=""){
+	let allRows = data[0][1];
+	if(type == 1){ // To a single row
+		data[1][1][1].map(() => {
+			data[2].push(0); // Fill-up with all the columns for this new row 
+		})
+	}else{ // To all rows
+		if(allRows.length > 0){
+			for(var i=0; i<allRows.length; i++){ // Loop through all rows
+				data[0][1][i][4].push(0); // Add new column with 0 value. Index 4 is the columns array
+			}
+			data[1][1][1].push(column_name);
+			
+			$('div#set-4').css('display', 'none');
+			if(data[0][1][0][4].length > 0){
+				$('div#set-4').css('display', 'block');
+			}
+		}
+	}
+	return data;
+}
 
 function selectedColumn(col_cap, selState=true){
 	let col_index = col_cap.index();
-	$("ul#set-1 li.row").each(function(){
+	// $("ul#set-1 li.row").each(function(){
+	$("table#set-1 tr.row").each(function(){
 		let li = $(this);
-		$(this).find("div.column").each(function(){
+		// $(this).find("div.column").each(function(){
+		$(this).find("th.column, td.column").each(function(){
 			let cell = $(this).index();
-			if(cell == col_index && li.index() > 0){
+			// if(cell == col_index && li.index() > 0){
+			if(cell == col_index){
 				if(selState){ // Column Cap selected state
 					$(this).addClass("sel-column");
 				}else{
@@ -563,7 +570,70 @@ function selectedColumn(col_cap, selState=true){
 	})
 }
 
-function resetRowAndColumn(rowAndcolumn){
-	// return [0, -1];
-	return [-1, [-1, rowAndcolumn[1][1].length > 0 ? rowAndcolumn[1][1] : []]];
+function resetRowAndColumn(rowAndcolumn=[-1, [-1, []]]){
+	// return [-1, [-1, rowAndcolumn[1][1].length > 0 ? rowAndcolumn[1][1] : []]];
+	rowAndcolumn[1][1] = rowAndcolumn[1][1].length > 0 ? rowAndcolumn[1][1] : [];
+
+	return rowAndcolumn;
+}
+
+function saveTable(){
+	let tableName = $("div#set-1 select").val();
+	if(tableName != null){
+		let tableData = all_tables[tableName];
+		let tableDataString = JSON.stringify(tableData);
+		localStorage.setItem("tableData", tableDataString);
+	}
+}
+function loadTable(){
+	let tableDataString = localStorage.getItem("tableData");
+	if(tableDataString != null){
+		all_tables = JSON.parse(tableDataString);
+	}
+	// console.log(all_tables);
+	// let tableName = $("div#set-1 select").val();
+	// if(tableName != null){
+	// 	let tableData = all_tables[tableName];
+	// 	let tableDataString = JSON.stringify(tableData);
+	// 	localStorage.setItem("tableData", tableDataString);
+	// }
+}
+function clearTable(){
+	all_tables = [];
+	$("div#set-1 select").html("");
+	$("div#set-1 label, div#set-2, div#set-2 div#opt-2, div#set-3, div#set-3 div#opt-2, div#set-4").css("display", "none");
+	$("div#set-1 input#cash-table-name").val("").focus();
+}
+function saveToExcel(){
+	new DataTable('table#set-1', {
+		layout: {
+			topStart: {
+				buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+			}
+		}
+	});
+	/* new DataTable('table#set-1', {
+		layout: {
+			topStart: {
+				buttons: [
+					{
+						text: 'My button',
+						action: function (e, dt, node, config) {
+							alert('Button activated');
+						}
+					}
+				]
+			}
+		}
+	}); */
+
+	// let table = new DataTable('table#set-1');
+	/* new DataTable.Buttons(table, {
+		buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+	});
+	
+	table
+		.buttons(0, null)
+		.container()
+		.prependTo(table.table().container()); */
 }

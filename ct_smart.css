@@ -54,55 +54,91 @@ main a:hover{
 	opacity: .7;
 }
 
-ul#set-1{
+/* ul#set-1{ */
+table#set-1{
 	/* width: 100%; */
+	background-color: yellow;
 	list-style: none;
 	white-space: nowrap;
+	margin-top: 20px;
 	padding: 5px;
 	overflow: auto;
+	border: 2px solid #c55c06;
 }
-ul#set-1 li.row{
+/* ul#set-1 li.row{ */
+table#set-1 tr.row{
 	background-color: yellow;
 	margin: 5px 0 5px 0;
 	padding: 5px;
 }
-ul#set-1 li.row div{
-	display: inline-block;
-	margin-right: 10px;
+/* ul#set-1 li.row div{ */
+table#set-1 tr.row th,
+table#set-1 tr.row td{
+	/* display: inline-block;
+	margin-right: 10px; */
 	padding: 5px;
-	/* border: 1px solid yellow; */
+	border: 1px solid yellow;
+}
+table#set-1 tr.row td{
+	text-align: center;
 }
 
-main a,
+/* main a,
 ul#set-1 li.grps-head div.column-cap,
-ul#set-1 li.grps-body{
+ul#set-1 li.grps-body{ */
+main a,
+table#set-1 tr.grps-head th.column-cap,
+table#set-1 tr.grps-head td.column-cap,
+table#set-1 tr.grps-body{
 	transition: all 0.5s ease;
 }
-ul#set-1 li.grps-body{
-	cursor: pointer;
-}
-ul#set-1 li.grps-head div.column-cap:hover,
+/* ul#set-1 li.grps-head div.column-cap:hover,
 ul#set-1 li.grps-head div.column-cap.selected,
 ul#set-1 li.grps-body div.grps-data:hover,
-ul#set-1 li.grps-body div.grps-data.selected{
+ul#set-1 li.grps-body div.grps-data.selected{ */
+table#set-1 tr.grps-head th.column-cap:hover,
+table#set-1 tr.grps-head th.column-cap.selected,
+table#set-1 tr.grps-body th.grps-data:hover,
+table#set-1 tr.grps-body td.grps-data:hover,
+table#set-1 tr.grps-body th.grps-data.selected,
+table#set-1 tr.grps-body td.grps-data.selected{
 	background-color: #80c1ff;
 	border: 1px solid red;
 }
-ul#set-1 li div.grps-num{
+/* ul#set-1 li div.grps-num{ */
+table#set-1 tr th.grps-num,
+table#set-1 tr td.grps-num{
 	width: 50px;
 }
-ul#set-1 li div.grps-names{
+/* ul#set-1 li div.grps-names{ */
+table#set-1 tr th.grps-names,
+table#set-1 tr td.grps-names{
 	width: 150px;
 }
-ul#set-1 li.grps-total  div.grps-data,
-ul#set-1 li div.grps-total{
+/* ul#set-1 li.grps-total  div.grps-data,
+ul#set-1 li div.grps-total{ */
+table#set-1 tr.grps-total  th.grps-data,
+table#set-1 tr.grps-total  td.grps-data,
+table#set-1 tr th.grps-total,
+table#set-1 tr td.grps-total{
 	background-color: #ffe6e6;
 }
-ul#set-1 li div.grps-total,
-ul#set-1 li div.grps-data{
+/* ul#set-1 li div.grps-total,
+ul#set-1 li div.grps-data{ */
+table#set-1 tr th.grps-total,
+table#set-1 tr td.grps-total,
+table#set-1 tr th.grps-data,
+table#set-1 tr td.grps-data{
 	width: 80px;
 }
-ul#set-1 li div.grps-data{
+/* ul#set-1 li.grps-body{ */
+table#set-1 tr.grps-body{
+	/* cursor: pointer; */
+}
+/* ul#set-1 li div.grps-data{ */
+table#set-1 tr.grps-body,
+table#set-1 tr th.grps-data,
+table#set-1 tr td.grps-data{
 	cursor: pointer;
 }
 
@@ -125,7 +161,8 @@ footer{
 	outline: none;
 }
 
-ul#set-1 li.row.sel-row{
+/* ul#set-1 li.row.sel-row{ */
+table#set-1 tr.row.sel-row{
 	background-color: rgba(76, 206, 86, 0.5);
 }
 
@@ -141,4 +178,8 @@ ul#set-1 li.row.sel-row{
 }
 .remove{
 	background-color: rgb(196, 44, 7);
+}
+
+table#set-1 tr.row td.ta-left{
+	text-align: left;
 }
